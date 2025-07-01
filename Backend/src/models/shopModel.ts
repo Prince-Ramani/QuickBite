@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 interface shopPatnersInteface {
   name: String;
-  profilePicture: String?;
+  profilePicture: String | undefined;
 }
 
 const shopSchema = new mongoose.Schema({

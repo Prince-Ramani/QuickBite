@@ -1,13 +1,17 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import path from "path";
-
 import mongoConnect from "./connection";
+
+import authRouter from "./routers/authRouter";
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 const app = express();
 
 const PORT = process.env.PORT || 8000;
+
+app.use(express.json());
+app.use("/api", authRouter);
 
 app.get("*", (req: Request, res: Response) => {
   console.log("No such api found", req.url);
