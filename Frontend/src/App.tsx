@@ -1,10 +1,9 @@
 import "./index.css";
-import { Button } from "./components/ui/button";
+import Signup from "./pages/Signup";
 function App() {
   return (
-    <div className="text-blue-600">
-      Hello world
-      <Button>Hwlloe </Button>
+    <div className="h-full">
+      <Signup />
     </div>
   );
 }

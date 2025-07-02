@@ -8,6 +8,8 @@ import {
 import { validateEmail } from "../services/email";
 import User from "../models/userModel";
 import { createToken, verifyToken } from "../services/JWt";
+import { error } from "console";
+import { sendEmai } from "../services/nodemailer";
 
 const phoneRegex = /^\d{10}$/;
 
@@ -85,6 +87,13 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
       profilePicture,
     });
     await newUser.save();
+
+    await sendEmai({
+      otp: "18973981",
+      to: "dust68506@gmail.com",
+      subject: "Welcome",
+      username: newUser.username,
+    });
 
     const token = createToken(newUser._id.toString());
 
@@ -168,17 +177,10 @@ export const logout = async (_: Request, res: Response): Promise<void> => {
 
 export const getMe = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { user } = req.cookies;
-
-    if (!user) {
-      res.status(400).json({ error: "Cookies not found!" });
-      return;
-    }
-
-    const userID = verifyToken(user);
+    const { user: userID } = req.cookies;
 
     if (!userID) {
-      res.status(400).json({ error: "Unauthorized" });
+      res.status(401).json({ error: "Cookies not found!" });
       return;
     }
 
@@ -194,6 +196,38 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
   } catch (err) {
     console.log("Error in getMe controller in authController.ts file", err);
     res.status(500).json({ error: "Internal server error!" });
+    return;
+  }
+};
+
+export const deleteAccount = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { user: userID } = req.cookies;
+
+    if (!userID) {
+      res.status(401).json({ error: "Cookies not found!" });
+      return;
+    }
+
+    const person = await User.findById(userID);
+
+    if (!person) {
+      res.status(401).json({ error: "No such account found!" });
+      return;
+    }
+
+    //not tested yet
+
+    //otp logic
+  } catch (err) {
+    console.log(
+      "Error in deleteAccount controller in authController.ts file",
+      err,
+    );
+    res.status(500).json({ error: "Internal sever error!" });
     return;
   }
 };
