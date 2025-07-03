@@ -7,15 +7,8 @@ export const protectMiddleware = async (
   next: NextFunction,
 ) => {
   try {
-    if (!req.user) {
-      res.status(401).json({ error: "Unauthorized" });
-      console.log(req.user);
-      return;
-    }
+    const token = req.cookies?.user;
 
-    const token: string = await req.cookies["user"];
-
-    console.log("token", token);
     if (!token) {
       res.status(401).json({ error: "Unauthorized" });
       return;
@@ -29,12 +22,6 @@ export const protectMiddleware = async (
     }
 
     req.user = validToken;
-
-    if (!req.user || req.user !== undefined) {
-      res.status(401).json({ error: "Unauthorized!" });
-      return;
-    }
-
     next();
   } catch (err) {
     console.log(

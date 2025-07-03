@@ -9,7 +9,7 @@ import { validateEmail } from "../services/email";
 import User from "../models/userModel";
 import { createToken, verifyToken } from "../services/JWt";
 import { error } from "console";
-import { sendEmai } from "../services/nodemailer";
+import { sendWelcomeMail } from "../services/nodemailer";
 
 const phoneRegex = /^\d{10}$/;
 
@@ -30,7 +30,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     ) {
       res
         .status(400)
-        .json({ error: "A username must be between 3 and 12 characters!" });
+        .json({ error: "A username must be between 3 to 12 characters!" });
       return;
     }
 
@@ -88,10 +88,8 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     });
     await newUser.save();
 
-    await sendEmai({
-      otp: "18973981",
-      to: "dust68506@gmail.com",
-      subject: "Welcome",
+    await sendWelcomeMail({
+      to: newUser.email,
       username: newUser.username,
     });
 
@@ -145,11 +143,10 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
     if (!validPassword) {
       res.status(400).json({ error: "Incorrect password." });
       return;
+      Number;
     }
 
     const token = createToken(person._id.toString());
-
-    console.log(token);
 
     res.cookie("user", token, {
       maxAge: 60 * 60 * 60,
@@ -177,14 +174,16 @@ export const logout = async (_: Request, res: Response): Promise<void> => {
 
 export const getMe = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { user: userID } = req.cookies;
+    const userID = req.user;
 
     if (!userID) {
       res.status(401).json({ error: "Cookies not found!" });
       return;
     }
 
-    const person = await User.findById(userID).select("-password").lean();
+    const person = await User.findById(userID)
+      .select("-password -phoneNumber")
+      .lean();
 
     if (!person) {
       res.status(400).json({ error: "No such account such account found!" });
