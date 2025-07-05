@@ -14,11 +14,7 @@ const shopSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-  },
-  password: {
+  shopEmail: {
     type: String,
     required: true,
   },
@@ -45,6 +41,12 @@ const shopSchema = new mongoose.Schema({
       },
     ],
 
+    userID: {
+      type: mongoose.Schema.Types.ObjectId,
+      rel: "User",
+      required: true,
+    },
+
     validate: [
       {
         validator: function (v: shopPatnersInteface[]) {
@@ -61,8 +63,13 @@ const shopSchema = new mongoose.Schema({
     ],
     required: true,
   },
+  shopLogo: {
+    type: String,
+    required: false,
+    default: "",
+  },
 
-  shopPicture: {
+  shopPictures: {
     type: [String],
     required: true,
     defualt: [],

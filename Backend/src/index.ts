@@ -4,6 +4,7 @@ import path from "path";
 import mongoConnect from "./connection";
 import cookieParser from "cookie-parser";
 import authRouter from "./routers/authRouter";
+import { isValidAddress } from "./services/openCage";
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 const app = express();
@@ -18,6 +19,10 @@ app.get("*", (req: Request, res: Response) => {
   res.status(404).json({ error: "No such api found!" });
 });
 
+const some = async () => {
+  await isValidAddress("kanakiya plot ");
+};
+some();
 app.listen(PORT, () => {
   mongoConnect();
   console.log("App listening on PORT : ", PORT);
