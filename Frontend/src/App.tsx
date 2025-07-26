@@ -14,9 +14,12 @@ import type { ApiError } from "./lib/types";
 
 import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
+import ShopAccount from "./pages/ShopAccount";
 import Loading from "./Custom_Components/Loading";
+import { SendHorizonal } from "lucide-react";
+import SettingsLayout from "./pages/settings/SettingsLayout";
 
-function App(): React.FC {
+function App() {
   const { setAuthUser } = useAuthUser();
   const { data, isLoading } = useQuery<userInterface | ApiError>({
     queryKey: ["authUser"],
@@ -45,17 +48,21 @@ function App(): React.FC {
       <Routes>
         <Route
           path="/sign-up"
-          element={isAuthUser ? <Loading /> : <Signup />}
+          element={isAuthUser ? <ShopAccount /> : <Signup />}
         />
 
         <Route
           path="/sign-in"
-          element={isAuthUser ? <Loading /> : <Signin />}
+          element={isAuthUser ? <ShopAccount /> : <Signin />}
         />
 
         <Route
+          path="/settings"
+          element={isAuthUser ? <SettingsLayout /> : <Signin />}
+        />
+        <Route
           path="*"
-          element={isAuthUser ? <Loading /> : <Navigate to="/sign-up" />}
+          element={isAuthUser ? <ShopAccount /> : <Navigate to="/sign-up" />}
         />
       </Routes>
     </Router>
