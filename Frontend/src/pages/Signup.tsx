@@ -6,6 +6,7 @@ import { validatePasswordStrength } from "@/services/password";
 import { validateEmail } from "@/services/email";
 import Loading from "@/Custom_Components/Loading";
 import { useNavigate } from "react-router-dom";
+
 const Signup = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Signup = () => {
     if (
       !info.username ||
       info.username.trim().length <= 3 ||
-      info.username.trim.length > 13
+      info.username.trim().length > 13
     ) {
       toast.error("Username must be between 3 to 12 charcters.");
       return;

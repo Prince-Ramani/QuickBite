@@ -7,26 +7,30 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { useAuthUser } from "./Context/use-auth-user";
+
+import type { userInterface } from "./lib/types";
+import type { ApiError } from "./lib/types";
 
 import Signup from "./pages/Signup";
-import Loading from "./Custom_Components/Loading";
-import { useAuthUser } from "./Context/use-auth-user";
 import Signin from "./pages/Signin";
-function App() {
+import Loading from "./Custom_Components/Loading";
+
+function App(): React.FC {
   const { setAuthUser } = useAuthUser();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<userInterface | ApiError>({
     queryKey: ["authUser"],
     queryFn: async () => {
       const res = await fetch("/api/getMe");
-      const data = await res.json();
+      const data: userInterface | ApiError = await res.json();
 
-      if ("_id" in data) setAuthUser(data);
+      if (!!data && "_id" in data) setAuthUser(data);
       return data;
     },
     retry: false,
   });
 
-  const isAuthUser = data && !data.error;
+  const isAuthUser = !!data && "_id" in data;
 
   if (isLoading) {
     return (

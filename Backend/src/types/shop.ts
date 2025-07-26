@@ -3,8 +3,8 @@ export interface shopAccountInterface {
   shopEmail: string;
   phoneNumber: string;
   shopAddress: string;
-  shopPartners: string;
+  shopPartners: [string];
   shopLogo: string;
-  shopPictures: [string];
+  shopPictures: string[];
   shopName: string;
 }

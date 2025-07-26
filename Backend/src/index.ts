@@ -20,7 +20,11 @@ app.get("*", (req: Request, res: Response) => {
 });
 
 const some = async () => {
-  await isValidAddress("kanakiya plot ");
+  const gg = await isValidAddress(
+    "1600 Amphitheatre Parkway, Mountain View, CA 94043, US",
+  );
+
+  console.log(gg);
 };
 some();
 app.listen(PORT, () => {

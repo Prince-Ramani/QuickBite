@@ -1,3 +1,4 @@
+import { defaultMaxListeners } from "events";
 import mongoose from "mongoose";
 
 interface shopPatnersInteface {
@@ -15,7 +16,7 @@ const shopSchema = new mongoose.Schema({
     required: true,
   },
   shopEmail: {
-    type: String,
+    type: Object,
     required: true,
   },
   phoneNumber: {
@@ -41,27 +42,16 @@ const shopSchema = new mongoose.Schema({
       },
     ],
 
-    userID: {
-      type: mongoose.Schema.Types.ObjectId,
-      rel: "User",
-      required: true,
-    },
-
     validate: [
       {
         validator: function (v: shopPatnersInteface[]) {
-          return v.length >= 1;
-        },
-        message: "A shop must have atleast one partner.",
-      },
-      {
-        validator: function (v: shopPatnersInteface[]) {
-          return v.length <= 4;
+          return v.length > 4;
         },
         message: "A shop must have maximum four partners mentioned.",
       },
     ],
     required: true,
+    default: [],
   },
   shopLogo: {
     type: String,
@@ -76,13 +66,13 @@ const shopSchema = new mongoose.Schema({
     validate: [
       {
         validator: function (v: String[]) {
-          return v.length >= 1;
+          return v.length == 0;
         },
         message: "A shop must provide atleast one shop image.",
       },
       {
         validator: function (v: String[]) {
-          return v.length <= 4;
+          return v.length > 4;
         },
         message: "A shop can upload a maximum of 4 images.",
       },
@@ -91,3 +81,5 @@ const shopSchema = new mongoose.Schema({
 });
 
 const Shop = mongoose.model("Shop", shopSchema);
+
+export default Shop;

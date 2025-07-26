@@ -1,5 +1,11 @@
 export interface userInterface {
+  _id: string;
   username: string;
   email: string;
-  profilePictures: string;
+  profilePicture: string;
+  phoneNumber: string;
+}
+
+export interface ApiError {
+  error: string;
 }
