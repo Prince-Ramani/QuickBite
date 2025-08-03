@@ -96,7 +96,9 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const token = createToken(newUser._id.toString());
 
     res.cookie("user", token, {
-      maxAge: 1000 * 60 * 60,
+      httpOnly: true,
+      secure: true,
+      maxAge: 1000 * 60 * 24 * 30,
     });
 
     res.status(202).json({ message: "Account created successfully." });
@@ -149,7 +151,9 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
     const token = createToken(person._id.toString());
 
     res.cookie("user", token, {
-      maxAge: 60 * 60 * 60,
+      httpOnly: true,
+      secure: true,
+      maxAge: 1000 * 60 * 24 * 30,
     });
 
     res.status(200).json({ message: "Loggedin successfully." });

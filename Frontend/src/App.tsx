@@ -16,7 +16,6 @@ import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
 import ShopAccount from "./pages/ShopAccount";
 import Loading from "./Custom_Components/Loading";
-import { SendHorizonal } from "lucide-react";
 import SettingsLayout from "./pages/settings/SettingsLayout";
 
 function App() {
@@ -37,7 +36,7 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center">
+      <dip className="flex justify-center items-center">
         <Loading />
       </div>
     );
@@ -48,12 +47,12 @@ function App() {
       <Routes>
         <Route
           path="/sign-up"
-          element={isAuthUser ? <ShopAccount /> : <Signup />}
+          element={isAuthUser ? <Navigate to="/settings" /> : <Signup />}
         />
 
         <Route
           path="/sign-in"
-          element={isAuthUser ? <ShopAccount /> : <Signin />}
+          element={isAuthUser ? <Navigate to="/settings" /> : <Signin />}
         />
 
         <Route
