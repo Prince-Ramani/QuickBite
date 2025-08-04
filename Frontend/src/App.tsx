@@ -17,7 +17,8 @@ import Signin from "./pages/Signin";
 import ShopAccount from "./pages/ShopAccount";
 import Loading from "./Custom_Components/Loading";
 import SettingsLayout from "./pages/settings/SettingsLayout";
-
+import Account from "./pages/settings/Account";
+import Profile from "./pages/settings/Profile";
 function App() {
   const { setAuthUser } = useAuthUser();
   const { data, isLoading } = useQuery<userInterface | ApiError>({
@@ -36,7 +37,7 @@ function App() {
 
   if (isLoading) {
     return (
-      <dip className="flex justify-center items-center">
+      <div className="flex justify-center items-center">
         <Loading />
       </div>
     );
@@ -58,7 +59,17 @@ function App() {
         <Route
           path="/settings"
           element={isAuthUser ? <SettingsLayout /> : <Signin />}
-        />
+        >
+          <Route
+            path="profile"
+            element={isAuthUser ? <Profile /> : <Signin />}
+          />
+
+          <Route
+            path="account"
+            element={isAuthUser ? <Account /> : <Signin />}
+          />
+        </Route>
         <Route
           path="*"
           element={isAuthUser ? <ShopAccount /> : <Navigate to="/sign-up" />}
