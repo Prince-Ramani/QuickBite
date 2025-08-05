@@ -3,7 +3,6 @@ export interface userInterface {
   username: string;
   email: string;
   profilePicture: string;
-  phoneNumber: string;
 }
 
 export interface ApiError {

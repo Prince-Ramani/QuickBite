@@ -88,10 +88,12 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     });
     await newUser.save();
 
-    await sendWelcomeMail({
-      to: newUser.email,
-      username: newUser.username,
-    });
+    //DISABLED IN PRODUCTION
+
+    // await sendWelcomeMail({
+    //   to: newUser.email,
+    //   username: newUser.username,
+    // });
 
     const token = createToken(newUser._id.toString());
 
@@ -150,6 +152,12 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 
     const token = createToken(person._id.toString());
 
+    //DISABLED IN PRODUCTION
+
+    // await sendWelcomeMail({
+    //   to: newUser.email,
+    //   username: newUser.username,
+    // });
     res.cookie("user", token, {
       httpOnly: true,
       secure: true,

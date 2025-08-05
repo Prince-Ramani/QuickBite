@@ -1,13 +1,19 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CustomTooltip from "../../Custom_Components/CustomTooltip";
 import { ArrowLeft, Settings, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
 const SettingsBar = () => {
   const navigate = useNavigate();
-
-  const iconMap: { [key: string]: React.FC<any> } = {
+  const location = useLocation();
+  const [currentPage, setCurrentPage] = useState("");
+  const iconMap: { [key: string]: any } = {
     Settings: Settings,
     UserRound: UserRound,
   };
+
+  useEffect(() => {
+    setCurrentPage(location.pathname.split("/")[2]);
+  }, [location.pathname]);
 
   const allSettings = [
     {
@@ -36,7 +42,7 @@ const SettingsBar = () => {
           return (
             <button
               key={index}
-              className="flex justify-start items-center gap-4 text-gray-700 p-2 border-b border-gray-200 hover:bg-gray-100 transition-colors focus:bg-gray-100 focus:outline-none w-full"
+              className={`flex justify-start items-center gap-4 text-gray-700 p-2 border-b border-gray-200 hover:bg-gray-100 transition-colors focus:bg-gray-100 focus:outline-none w-full ${currentPage === setting.navigateTo ? "border-r-2 rounded-r-[2px] border-r-blue-500" : ""}`}
               onClick={() => navigate(setting.navigateTo)}
             >
               <div>
