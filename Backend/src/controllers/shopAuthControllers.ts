@@ -94,28 +94,28 @@ export const switchAccount = async (
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
     let uploadedShopLogo = "";
-    if (shopLogo && shopLogo.trim() !== "") {
+    if (!!files.shopLogo && files.shopLogo.length !== 0) {
       const logo = files?.["shopLogo"];
 
       const upr = await uploadSingleToCloudinary(logo[0], "shop-logo");
 
       if (upr.failedToUpload) {
         res.status(400).json({
-          error: "Failed to uploade images!",
+          error: "Failed to upload images!",
         });
         return;
       }
       uploadedShopLogo = upr.result;
     }
 
-    if (!Array.isArray(shopPictures) || shopPictures.length === 0) {
+    if (!files.shopPictures || files.shopPictures.length === 0) {
       res.status(400).json({
         error: "At least 1 shop picture required to create shop account!",
       });
       return;
     }
 
-    if (shopPictures.length > 4) {
+    if (files.shopPictures.length > 4) {
       res.status(400).json({
         error: "A shop can only include maximum 4 shop pictures.",
       });

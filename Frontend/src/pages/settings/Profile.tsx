@@ -1,15 +1,36 @@
 import { useAuthUser } from "@/Context/use-auth-user";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import toast from "react-hot-toast";
+import { useMutation, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { authUser } = useAuthUser();
   const navigate = useNavigate();
-  const [info, setInfo] = useState(
-    () => authUser ?? { username: "", email: "", profilePicture: "" },
-  );
+  const queryClient = useQueryClient();
+  const [info, setInfo] = useState(() => authUser ?? { username: "" });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { mutate: updateProfile, isLoading } = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await fetch("/api/settings/updateProfile", {
+        method: "PUT",
+        body: formData,
+      });
+      const data = await res.json();
+      return data;
+    },
+    onSuccess: (data) => {
+      if ("error" in data) {
+        toast.error(data.error);
+        return;
+      }
+      toast.success(data.message);
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    },
+  });
 
   useEffect(() => {
     return () => {
@@ -23,22 +44,41 @@ const Profile = () => {
     navigate("/singin");
     return null;
   }
-  const isChanged =
-    info.username !== authUser.username ||
-    info.email !== authUser.email ||
-    info.profilePicture !== authUser.profilePicture;
+  const isChanged = info.username !== authUser.username || preview !== null;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
-    if (file) setPreview(URL.createObjectURL(file));
+    if (file) {
+      setSelectedFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
   };
+
   const handleDelete = () => {
-    if (preview !== null) {
+    if (preview !== null || selectedFile !== null) {
+      setSelectedFile(null);
       setPreview(null);
       return;
     } else {
       setInfo((prev) => ({ ...prev, profilePicture: "" }));
     }
+  };
+
+  const handleUpdate = () => {
+    const username = info.username.trim();
+    if (username.trim() === "" && username === authUser.username) {
+      toast.error("Please enter new username to update.");
+      return;
+    }
+    if (username.trim().length <= 3 || username.trim().length > 13) {
+      toast.error("Username must be between 3 to 12 charcters.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("username", username);
+    if (selectedFile) formData.append("profilePicture", selectedFile);
+    console.log(formData.entries);
+    if (!isLoading) updateProfile(formData);
   };
 
   return (
@@ -65,12 +105,14 @@ const Profile = () => {
           <div className="flex flex-col lg:flex-row gap-4">
             <button
               className="bg-blue-300 rounded-sm p-2 px-3 font-semibold text-white text-sm sm:text-base focus:outline-red-600"
+              disabled={isLoading}
               onClick={() => fileInputRef.current?.click()}
             >
               Change picture
             </button>
             <button
               className="bg-gray-300 rounded-sm p-2 px-3 font-semibold text-black/60 text-sm sm:text-base focus:outline-red-600"
+              disabled={isLoading}
               onClick={handleDelete}
             >
               {preview === null ? "Delete picture" : "Delete Preview"}
@@ -107,10 +149,8 @@ const Profile = () => {
               id="email"
               name="email"
               type="text"
-              value={info.email}
-              onChange={(e) =>
-                setInfo((prev) => ({ ...prev, email: e.target.value }))
-              }
+              readOnly
+              value={authUser.email}
               className="p-2 border-2 border-gray-200 lg:text-lg rounded-sm focus:outline-blue-300 w-full group md:hover:border-gray-300"
             />
           </div>
@@ -120,9 +160,10 @@ const Profile = () => {
             className={`${
               isChanged ? "bg-blue-400" : "bg-gray-300"
             } disabled:bg-gray-300 rounded-sm p-2 px-3 font-semibold text-white text-sm sm:text-base focus:outline-red-600`}
-            disabled={!isChanged}
+            onClick={handleUpdate}
+            disabled={!isChanged || isLoading}
           >
-            Save changes
+            {isLoading ? "Saving..." : "Save changes"}
           </button>
         </div>
       </div>

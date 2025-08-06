@@ -48,8 +48,8 @@ export const uploadSingleToCloudinary = async (
       resource_type: "image",
       folder: folderName,
     });
-
-    await fspromises.unlink(`../../uploads/${image.filename}`);
+    console.log(image.filename);
+    await fspromises.unlink(`../uploads/${image.filename}`);
     result = uploadResult.secure_url;
   } catch (err) {
     failedToUpload = true;

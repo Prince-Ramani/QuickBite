@@ -106,8 +106,13 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     res.status(202).json({ message: "Account created successfully." });
     return;
   } catch (err) {
-    console.log("Error in signup controller in authController.ts file", err);
-    res.status(500).json({ error: "Internal server error!" });
+    if (err instanceof Error) {
+      console.error("Error occurred in signup controller:", err.message);
+      console.error("Stack trace:", err.stack);
+    } else {
+      console.error("Unknown error occurred in signup controller:", err);
+    }
+    res.status(500).json({ error: "Internal server error." });
     return;
   }
 };
@@ -167,8 +172,13 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({ message: "Loggedin successfully." });
     return;
   } catch (err) {
-    console.log("Error in signin controller in authController.ts file", err);
-    res.status(500).json({ error: "Internal server error!" });
+    if (err instanceof Error) {
+      console.error("Error occurred in signin controller:", err.message);
+      console.error("Stack trace:", err.stack);
+    } else {
+      console.error("Unknown error occurred in signin controller:", err);
+    }
+    res.status(500).json({ error: "Internal server error." });
     return;
   }
 };
@@ -205,8 +215,13 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json(person);
     return;
   } catch (err) {
-    console.log("Error in getMe controller in authController.ts file", err);
-    res.status(500).json({ error: "Internal server error!" });
+    if (err instanceof Error) {
+      console.error("Error occurred in getMe controller:", err.message);
+      console.error("Stack trace:", err.stack);
+    } else {
+      console.error("Unknown error occurred in getMe controller:", err);
+    }
+    res.status(500).json({ error: "Internal server error." });
     return;
   }
 };
@@ -234,11 +249,13 @@ export const deleteAccount = async (
 
     //otp logic
   } catch (err) {
-    console.log(
-      "Error in deleteAccount controller in authController.ts file",
-      err,
-    );
-    res.status(500).json({ error: "Internal sever error!" });
+    if (err instanceof Error) {
+      console.error("Error occurred in deleteAccount controller:", err.message);
+      console.error("Stack trace:", err.stack);
+    } else {
+      console.error("Unknown error occurred in deleteAccount controller:", err);
+    }
+    res.status(500).json({ error: "Internal server error." });
     return;
   }
 };
