@@ -1,5 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import { promises as fspromises } from "fs";
+import multer from "multer";
+import { ExponentiationOperator } from "typescript";
 interface utcInterface {
   failedToUpload: boolean;
   result: string[] | undefined;
@@ -19,7 +21,7 @@ export const uploadeToCloudinary = async (
           folder: folderName,
         });
 
-        await fspromises.unlink(`../../uploads/${img.filename}`);
+        await fspromises.unlink(`../uploads/${img.filename}`);
         results.push(uploadResult.secure_url);
       } catch (err) {
         failedToUpload = true;
@@ -59,5 +61,29 @@ export const uploadSingleToCloudinary = async (
   return {
     result,
     failedToUpload,
+  };
+};
+
+const deleteSingleFromCouldinary = async (
+  image: string,
+  resource_type: "image" | "raw" | "video",
+) => {
+  let result = "";
+  let failedToDelete = false;
+  const imgPath = image.split("/").splice(-1)[0].split(".")[0];
+  // const imgID = `${ImageFolder}/${imgPath}`;
+  try {
+    const uploadResult = await cloudinary.uploader.destroy(image, {
+      resource_type: resource_type || "image",
+    });
+    if (uploadResult.result === "ok") return;
+    else failedToDelete = true;
+  } catch (err) {
+    failedToDelete = true;
+    console.error("Failes to delete image : ", err);
+  }
+  return {
+    result,
+    failedToDelete,
   };
 };

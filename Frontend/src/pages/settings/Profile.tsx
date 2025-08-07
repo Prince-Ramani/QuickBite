@@ -9,10 +9,11 @@ const Profile = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [info, setInfo] = useState(() => authUser ?? { username: "" });
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null | "remove">(
+    null,
+  );
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const { mutate: updateProfile, isLoading } = useMutation({
     mutationFn: async (formData: FormData) => {
       const res = await fetch("/api/settings/updateProfile", {
@@ -44,7 +45,10 @@ const Profile = () => {
     navigate("/singin");
     return null;
   }
-  const isChanged = info.username !== authUser.username || preview !== null;
+  const isChanged =
+    info.username !== authUser.username ||
+    preview !== null ||
+    selectedFile === "remove";
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -55,12 +59,12 @@ const Profile = () => {
   };
 
   const handleDelete = () => {
-    if (preview !== null || selectedFile !== null) {
+    if (preview !== null && selectedFile !== null) {
       setSelectedFile(null);
       setPreview(null);
       return;
     } else {
-      setInfo((prev) => ({ ...prev, profilePicture: "" }));
+      setSelectedFile("remove");
     }
   };
 
@@ -76,8 +80,11 @@ const Profile = () => {
     }
     const formData = new FormData();
     formData.append("username", username);
-    if (selectedFile) formData.append("profilePicture", selectedFile);
-    console.log(formData.entries);
+    if (selectedFile && selectedFile !== "remove") {
+      formData.append("profilePicture", selectedFile);
+    } else if (selectedFile === "remove") {
+      formData.append("removeProfilePicture", "true");
+    }
     if (!isLoading) updateProfile(formData);
   };
 

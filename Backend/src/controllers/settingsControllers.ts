@@ -10,11 +10,11 @@ export const updateProfile = async (
 ): Promise<void> => {
   try {
     const {
-      profilePicture,
       username,
+      removeProfilePicture,
     }: {
-      profilePicture: string | undefined;
       username: string | undefined;
+      removeProfilePicture?: string | undefined;
     } = req.body;
 
     const userID = req.user;
@@ -55,6 +55,9 @@ export const updateProfile = async (
 
     if (pp) {
       user.profilePicture = pp;
+    } else if (removeProfilePicture === "true") {
+      //Add default Profile picture
+      user.profilePicture = "";
     }
 
     user.username = username;
