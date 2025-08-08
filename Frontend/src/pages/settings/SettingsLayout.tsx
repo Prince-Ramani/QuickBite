@@ -6,17 +6,21 @@ const SettingsLayout = () => {
   const location = useLocation();
   const [isParentPage, setIsParentPage] = useState<boolean>(false);
   useEffect(() => {
-    setIsParentPage(location.pathname === "/settings/");
+    setIsParentPage(
+      location.pathname === "/settings/" || location.pathname === "/settings",
+    );
   }, [location.pathname]);
 
   return (
-    <div className="h-full w-full bg-slate-300 flex justify-center items-center 2xl:px-72 ">
+    <div className="h-full w-full  flex justify-center items-center 2xl:px-72 ">
       <div
-        className={`min-h-full w-full bg-white ${isParentPage ? "block" : "hidden"}  lg:block lg:border-r lg:w-1/4 `}
+        className={`min-h-full border-2 w-full bg-white ${isParentPage ? "block" : "hidden"}  lg:block lg:border-r lg:w-1/4 `}
       >
         <SettingsBar />
       </div>
-      <div className="min-h-full bg-white w-full lg:w-3/4">
+      <div
+        className={`${isParentPage ? "hidden" : "block"}  lg:block min-h-full bg-white w-full lg:w-3/4`}
+      >
         <Outlet />
       </div>
     </div>

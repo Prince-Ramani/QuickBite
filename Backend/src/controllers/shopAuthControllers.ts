@@ -3,7 +3,7 @@ import { shopAccountInterface } from "../types/shop";
 import { validateEmail } from "../services/email";
 import { isValidAddress } from "../services/openCage";
 import {
-  uploadeToCloudinary,
+  uploadToCloudinary,
   uploadSingleToCloudinary,
 } from "../services/uploadToClodinary";
 import mongoose from "mongoose";
@@ -124,7 +124,11 @@ export const switchAccount = async (
 
     const shopImages = files?.["shopPictures"];
 
-    const uploadResult = await uploadeToCloudinary(shopImages, "Shop-Pictures");
+    const uploadResult = await uploadToCloudinary(
+      shopImages,
+      "shop-images",
+      "image",
+    );
 
     if (uploadResult.failedToUpload) {
       res.status(400).json({

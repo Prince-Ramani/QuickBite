@@ -7,9 +7,20 @@ interface utcInterface {
   result: string[] | undefined;
 }
 
-export const uploadeToCloudinary = async (
+const rootName = "QuickBite/";
+
+type folderNameType =
+  | "shop-images"
+  | "shop-logos"
+  | "profile-pictures"
+  | "banners";
+
+type resource_typetype = "image" | "raw" | "auto" | "video";
+
+export const uploadToCloudinary = async (
   images: Express.Multer.File[],
-  folderName: string,
+  folder: folderNameType,
+  resource_type: resource_typetype,
 ): Promise<utcInterface> => {
   let results: string[] = [];
   let failedToUpload = false;
@@ -17,8 +28,8 @@ export const uploadeToCloudinary = async (
     images.map(async (img) => {
       try {
         const uploadResult = await cloudinary.uploader.upload(img.path, {
-          resource_type: "image",
-          folder: folderName,
+          resource_type,
+          folder,
         });
 
         await fspromises.unlink(`../uploads/${img.filename}`);
@@ -50,7 +61,6 @@ export const uploadSingleToCloudinary = async (
       resource_type: "image",
       folder: folderName,
     });
-    console.log(image.filename);
     await fspromises.unlink(`../uploads/${image.filename}`);
     result = uploadResult.secure_url;
   } catch (err) {
@@ -66,7 +76,7 @@ export const uploadSingleToCloudinary = async (
 
 const deleteSingleFromCouldinary = async (
   image: string,
-  resource_type: "image" | "raw" | "video",
+  resource_type: "raw" | "image" | "video",
 ) => {
   let result = "";
   let failedToDelete = false;
