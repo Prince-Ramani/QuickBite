@@ -29,6 +29,9 @@ const Profile = () => {
         return;
       }
       toast.success(data.message);
+      setSelectedFile(null);
+      setPreview(null);
+
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
   });
@@ -59,7 +62,7 @@ const Profile = () => {
   };
 
   const handleDelete = () => {
-    if (preview !== null && selectedFile !== null) {
+    if (preview !== null) {
       setSelectedFile(null);
       setPreview(null);
       return;
@@ -100,7 +103,11 @@ const Profile = () => {
           <img
             className="bg-blue-300 rounded-full size-32 object-cover "
             alt="profile-picture"
-            src={preview || authUser.profilePicture}
+            src={
+              selectedFile === "remove"
+                ? ""
+                : preview || authUser.profilePicture
+            }
           />
           <input
             ref={fileInputRef}

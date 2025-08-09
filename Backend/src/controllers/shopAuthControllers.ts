@@ -97,7 +97,11 @@ export const switchAccount = async (
     if (!!files.shopLogo && files.shopLogo.length !== 0) {
       const logo = files?.["shopLogo"];
 
-      const upr = await uploadSingleToCloudinary(logo[0], "shop-logo");
+      const upr = await uploadSingleToCloudinary(
+        logo[0],
+        "shop-logos",
+        "image",
+      );
 
       if (upr.failedToUpload) {
         res.status(400).json({

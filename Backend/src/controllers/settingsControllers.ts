@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { UnderscoreEscapedMap } from "typescript";
-import { uploadSingleToCloudinary } from "../services/uploadToClodinary";
+import {
+  deleteSingleFromCouldinary,
+  uploadSingleToCloudinary,
+} from "../services/uploadToClodinary";
 import User from "../models/userModel";
 import { isValidObjectId } from "mongoose";
 
@@ -21,6 +24,7 @@ export const updateProfile = async (
 
     if (!req.user || !isValidObjectId(userID)) {
       res.status(400).json({ error: "Unauthorized." });
+      return;
     }
 
     if (
@@ -34,30 +38,68 @@ export const updateProfile = async (
       return;
     }
 
-    const file = req.file;
-    let pp: string | undefined = undefined;
-    if (req.file) {
-      const upr = await uploadSingleToCloudinary(req.file, "profile-pictures");
-      if (upr.failedToUpload) {
-        res.status(400).json({
-          error: "Failed to upload profile picture!",
-        });
-        return;
-      }
-      pp = upr.result;
-    }
-
     const user = await User.findById(userID);
     if (!user) {
       res.status(404).json({ error: "No such user found!" });
       return;
     }
 
-    if (pp) {
-      user.profilePicture = pp;
-    } else if (removeProfilePicture === "true") {
+    const file = req.file;
+    let pp: string | undefined = undefined;
+
+    if (req.file) {
+      const upr = await uploadSingleToCloudinary(
+        req.file,
+        "profile-pictures",
+        "image",
+      );
+
+      if (upr.failedToUpload) {
+        res.status(400).json({
+          error: "Failed to upload profile picture!",
+        });
+        return;
+      }
+
       //Add default Profile picture
-      user.profilePicture = "";
+      if (user.profilePicture !== "") {
+        const deleteResult = await deleteSingleFromCouldinary(
+          user.profilePicture,
+          "profile-pictures",
+          "image",
+        );
+
+        if (deleteResult.failedToDelete) {
+          res.status(500).json({
+            error:
+              "Failed to delete previous profile picture. Try again later!",
+          });
+          return;
+        }
+      }
+
+      user.profilePicture = upr.result;
+    }
+
+    if (removeProfilePicture && removeProfilePicture === "true") {
+      //Add default Profile picture
+      if (user.profilePicture !== "") {
+        const deleteResult = await deleteSingleFromCouldinary(
+          user.profilePicture,
+          "profile-pictures",
+          "image",
+        );
+
+        if (deleteResult.failedToDelete) {
+          res.status(500).json({
+            error:
+              "Failed to delete previous profile picture. Try again later!",
+          });
+          return;
+        }
+        //Add default Profile picture
+        user.profilePicture = "";
+      }
     }
 
     user.username = username;

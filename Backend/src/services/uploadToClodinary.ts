@@ -24,6 +24,7 @@ export const uploadToCloudinary = async (
 ): Promise<utcInterface> => {
   let results: string[] = [];
   let failedToUpload = false;
+  folder = rootName + folder;
   await Promise.all(
     images.map(async (img) => {
       try {
@@ -49,17 +50,19 @@ export const uploadToCloudinary = async (
 
 export const uploadSingleToCloudinary = async (
   image: Express.Multer.File,
-  folderName: string,
+  folder: folderNameType,
+  resource_type: resource_typetype,
 ): Promise<{
   result: string;
   failedToUpload: boolean;
 }> => {
   let result: string = "";
   let failedToUpload = false;
+  folder = rootName + folder;
   try {
     const uploadResult = await cloudinary.uploader.upload(image.path, {
-      resource_type: "image",
-      folder: folderName,
+      folder,
+      resource_type: resource_type,
     });
     await fspromises.unlink(`../uploads/${image.filename}`);
     result = uploadResult.secure_url;
@@ -74,20 +77,21 @@ export const uploadSingleToCloudinary = async (
   };
 };
 
-const deleteSingleFromCouldinary = async (
+export const deleteSingleFromCouldinary = async (
   image: string,
+  folder: folderNameType,
   resource_type: "raw" | "image" | "video",
 ) => {
   let result = "";
   let failedToDelete = false;
+  folder = rootName + folder;
   const imgPath = image.split("/").splice(-1)[0].split(".")[0];
-  // const imgID = `${ImageFolder}/${imgPath}`;
+  const imgID = `${folder}/${imgPath}`;
   try {
-    const uploadResult = await cloudinary.uploader.destroy(image, {
-      resource_type: resource_type || "image",
+    const uploadResult = await cloudinary.uploader.destroy(imgID, {
+      resource_type,
     });
-    if (uploadResult.result === "ok") return;
-    else failedToDelete = true;
+    if (uploadResult.result !== "ok") failedToDelete = true;
   } catch (err) {
     failedToDelete = true;
     console.error("Failes to delete image : ", err);
